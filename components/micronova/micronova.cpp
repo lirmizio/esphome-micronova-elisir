@@ -69,17 +69,13 @@ void MicroNova::loop() {
         // For READ commands, notify all listeners registered for this address
         uint8_t loc = this->current_command_.memory_location;
         uint8_t addr = this->current_command_.memory_address;
-        bool has_listener = false;
         for (auto *listener : this->listeners_) {
           if (listener->get_memory_location() == loc && listener->get_memory_address() == addr) {
             listener->process_value_from_stove(stove_reply_value);
-            has_listener = true;
           }
         }
-        // Reads nobody listens to come from a register scan: log them so the map can be rebuilt from the log.
-        if (!has_listener) {
-          ESP_LOGI(TAG, "Registro %02X:%02X = %d", loc, addr, stove_reply_value);
-        }
+        // Every read is logged, sensor addresses included, so a full register scan can be rebuilt from the log.
+        ESP_LOGI(TAG, "Registro %02X:%02X = %d", loc, addr, stove_reply_value);
       }
 #else
       this->read_stove_reply_();

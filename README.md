@@ -7,15 +7,15 @@ pellet stove (Micronova board J034_5) read through a PC817 optocoupler interface
    optocoupler stays on and loads the stove's DATA line. On this stove that blocked the IR remote
    (remote dead with the ESP32 powered, working again with it unpowered). Here the pin is high at rest
    and low only from the end of a transmission until the reply or the 200 ms timeout.
-2. **Scan logging.** A read with no entity behind it (queued from a lambda with
-   `queue_read_request(location, address)`) is logged at INFO as `Registro LL:AA = value`, so a whole
-   RAM/EEPROM sweep can be captured from the log.
+2. **Scan logging.** Every successful read, including those behind an entity, is logged at INFO as
+   `Registro LL:AA = value` (-1 = checksum mismatch). Reads can be queued from a lambda with
+   `queue_read_request(location, address)`, so a whole RAM/EEPROM sweep can be captured from the log.
 3. **Stove state bound check.** Codes above 10 are shown as `Codice N` instead of indexing past the
    11-entry state table.
 
 ```yaml
 external_components:
-  - source: github://lirmizio/esphome-micronova-elisir@main
+  - source: github://lirmizio/esphome-micronova-elisir@v3
     components: [micronova]
 ```
 
