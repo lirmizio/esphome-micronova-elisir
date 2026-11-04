@@ -74,6 +74,9 @@ class MicroNova final : public Component, public uart::UARTDevice {
   /// @param location Memory location on the stove
   /// @param address Memory address on the stove
   void queue_read_request(uint8_t location, uint8_t address);
+
+  /// Reads waiting in the queue: lets a slow targeted scan send one address at a time.
+  size_t pending_reads() const { return this->read_queue_.size(); }
 #endif
 
 #ifdef USE_MICRONOVA_WRITER

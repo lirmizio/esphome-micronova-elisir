@@ -112,6 +112,12 @@ void MicroNova::loop() {
 
 #ifdef MICRONOVA_LISTENER_COUNT
 void MicroNova::queue_read_request(uint8_t location, uint8_t address) {
+  // 0x80/0xA0 are the RAM/EEPROM write codes: if the stove drops a byte, repeated reads of them can line up
+  // into a valid write frame (80 00 80 00). A location with bit 7 set would itself be a write.
+  if ((location & 0x80) || address == 0x80 || address == 0xA0) {
+    ESP_LOGW(TAG, "Read [%02X,%02X] refused: write code", location, address);
+    return;
+  }
   // Check if this read is already queued
   for (const auto &queued : this->read_queue_) {
     if (queued.memory_location == location && queued.memory_address == address) {
